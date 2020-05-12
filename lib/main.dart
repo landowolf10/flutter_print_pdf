@@ -140,6 +140,10 @@ class _MyAppState extends State<MyApp> {
                           onPressed:  _connected?() async {
                             Map<String, dynamic> config = Map();
                             List<LineText> list = List();
+                            ByteData data = await rootBundle.load("img/botanax.jpg");
+                            List<int> imageBytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+                            String base64Image = base64Encode(imageBytes);
+                            list.add(LineText(type: LineText.TYPE_IMAGE, content: base64Image, align: LineText.ALIGN_CENTER, linefeed: 1));
                             list.add(LineText(type: LineText.TYPE_TEXT, content: 'A Title', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
                             list.add(LineText(type: LineText.TYPE_TEXT, content: 'this is conent left', weight: 0, align: LineText.ALIGN_LEFT,linefeed: 1));
                             list.add(LineText(type: LineText.TYPE_TEXT, content: 'this is conent right', align: LineText.ALIGN_RIGHT,linefeed: 1));

@@ -15,14 +15,41 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   BluetoothPrint bluetoothPrint = BluetoothPrint.instance;
+  List<String> listaProductos = new List<String>();
+  List<int> listaCantidad = new List<int>();
+  List<double> listaPrecios = new List<double>();
+  double precioTotal;
 
   bool _connected = false;
   BluetoothDevice _device;
   String tips = 'no device connect';
+  String vendedor, cliente;
 
   @override
   void initState() {
     super.initState();
+
+    vendedor = "Vendedor de prueba";
+    cliente = "Cliente de prueba";
+
+    listaProductos.add("Producto 1");
+    listaProductos.add("Producto 2");
+    listaProductos.add("Producto 3");
+    listaProductos.add("Producto 4");
+
+    listaCantidad.add(2);
+    listaCantidad.add(5);
+    listaCantidad.add(1);
+    listaCantidad.add(10);
+
+    listaPrecios.add(20.45);
+    listaPrecios.add(5);
+    listaPrecios.add(15);
+    listaPrecios.add(100.50);
+
+    precioTotal = 140.95;
+
+    print(listaProductos);
 
     WidgetsBinding.instance.addPostFrameCallback((_) => initBluetooth());
   }
@@ -136,62 +163,44 @@ class _MyAppState extends State<MyApp> {
                           ],
                         ),
                         OutlineButton(
-                          child: Text('print receipt(esc)'),
+                          child: Text('Imprimir ticket'),
                           onPressed:  _connected?() async {
                             Map<String, dynamic> config = Map();
                             List<LineText> list = List();
-                            ByteData data = await rootBundle.load("img/botanax.jpg");
+                            ByteData data = await rootBundle.load("img/botanaxLogo.png");
                             List<int> imageBytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
                             String base64Image = base64Encode(imageBytes);
-                            list.add(LineText(type: LineText.TYPE_IMAGE, content: base64Image, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'A Title', weight: 1, align: LineText.ALIGN_CENTER,linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'this is conent left', weight: 0, align: LineText.ALIGN_LEFT,linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'this is conent right', align: LineText.ALIGN_RIGHT,linefeed: 1));
-                            list.add(LineText(linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_BARCODE, content: 'A12312112', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_QRCODE, content: 'qrcode i', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(linefeed: 1));
-
-                            //ByteData data = await rootBundle.load("assets/images/guide3.png");
-                            //List<int> imageBytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-                            //String base64Image = base64Encode(imageBytes);
-                            //list.add(LineText(type: LineText.TYPE_IMAGE, content: base64Image, align: LineText.ALIGN_CENTER, linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_IMAGE, content: base64Image, align: LineText.ALIGN_LEFT, linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Botanax del Puerto', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'RFC: 454613545342154', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Ciudad Lázaron Cárdenas', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Col. Comunal Morelos', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: vendedor, size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: cliente, size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Producto:', size:10, align: LineText.ALIGN_LEFT, linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: listaProductos.toString()
+                                                                                                .replaceAll(",", "\n").
+                                                                                                replaceAll("[", " ").
+                                                                                                replaceAll("]", ""),
+                                                                                                weight: 1, align: LineText.ALIGN_LEFT, linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Cant:', size:10, align: LineText.ALIGN_CENTER));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: listaCantidad.toString()
+                                                                                                .replaceAll(",", "\n").
+                                                                                                replaceAll("[", " ").
+                                                                                                replaceAll("]", ""),
+                                                                                                weight: 1, align: LineText.ALIGN_CENTER, linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'P/u:', size:10, align: LineText.ALIGN_RIGHT));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: listaPrecios.toString()
+                                                                                                .replaceAll(",", "\n").
+                                                                                                replaceAll("[", " ").
+                                                                                                replaceAll("]", ""),
+                                                                                                weight: 1, align: LineText.ALIGN_RIGHT, linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'P/t:', size:10, align: LineText.ALIGN_CENTER));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: "Precio total: $precioTotal", size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
 
                             await bluetoothPrint.printReceipt(config, list);
                           }:null,
                         ),
-                        OutlineButton(
-                          child: Text('print label(tsc)'),
-                          onPressed:  _connected?() async {
-                            Map<String, dynamic> config = Map();
-                            config['width'] = 40; // 标签宽度，单位mm
-                            config['height'] = 70; // 标签高度，单位mm
-                            config['gap'] = 2; // 标签间隔，单位mm
-
-                            // x、y坐标位置，单位dpi，1mm=8dpi
-                            List<LineText> list = List();
-                            list.add(LineText(type: LineText.TYPE_TEXT, x:10, y:10, content: 'A Title'));
-                            list.add(LineText(type: LineText.TYPE_TEXT, x:10, y:40, content: 'this is content'));
-                            list.add(LineText(type: LineText.TYPE_QRCODE, x:10, y:70, content: 'qrcode i\n'));
-                            list.add(LineText(type: LineText.TYPE_BARCODE, x:10, y:190, content: 'qrcode i\n'));
-
-                            /*List<LineText> list1 = List();
-                            ByteData data = await rootBundle.load("assets/images/guide3.png");
-                            List<int> imageBytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-                            String base64Image = base64Encode(imageBytes);
-                            list1.add(LineText(type: LineText.TYPE_IMAGE, x:10, y:10, content: base64Image,));*/
-
-                            await bluetoothPrint.printLabel(config, list);
-                            //await bluetoothPrint.printLabel(config, list1);
-                          }:null,
-                        ),
-                        OutlineButton(
-                          child: Text('print selftest'),
-                          onPressed:  _connected?() async {
-                            await bluetoothPrint.printTest();
-                          }:null,
-                        )
                       ],
                     ),
                   )

@@ -37,23 +37,39 @@ class _MyAppState extends State<MyApp> {
     listaProductos.add("Producto 2");
     listaProductos.add("Producto 3");
     listaProductos.add("Producto 4");
+    listaProductos.add("Producto 5");
+    listaProductos.add("Producto 6");
+    listaProductos.add("Producto 7");
+    listaProductos.add("Producto 8");
 
     listaCantidad.add(2);
     listaCantidad.add(5);
     listaCantidad.add(1);
     listaCantidad.add(10);
+    listaCantidad.add(2);
+    listaCantidad.add(3);
+    listaCantidad.add(2);
+    listaCantidad.add(6);
 
     listaPrecios.add(20.45);
     listaPrecios.add(5);
     listaPrecios.add(15);
     listaPrecios.add(100.50);
+    listaPrecios.add(10);
+    listaPrecios.add(5);
+    listaPrecios.add(2.50);
+    listaPrecios.add(8);
 
     listaTotalCantidad.add(40.9);
     listaTotalCantidad.add(25);
     listaTotalCantidad.add(15);
     listaTotalCantidad.add(1005);
+    listaTotalCantidad.add(20);
+    listaTotalCantidad.add(15);
+    listaTotalCantidad.add(5);
+    listaTotalCantidad.add(48);
 
-    precioTotal = 140.95;
+    precioTotal = 1173.9;
 
     WidgetsBinding.instance.addPostFrameCallback((_) => initBluetooth());
   }
@@ -215,6 +231,41 @@ class _MyAppState extends State<MyApp> {
                             await bluetoothPrint.printReceipt(config, list);
                           }:null,
                         ),
+                        Container(
+                          height: 300.0,
+                          child: ListView(
+                            padding: const EdgeInsets.all(20.0),
+                              children: <Widget>[
+                                SizedBox(
+                                    height: 280,
+                                    child: ListView(
+                                      children: <Widget>[
+                                        Text("Botanax del Puerto"),
+                                        Text("RFC: 454613545342154"),
+                                        Text("Ciudad Lázaron Cárdenas"),
+                                        Text("Col. Comunal Morelos"),
+                                        Text(vendedor),
+                                        Text(cliente),
+                                        Text(""),
+                                        Text("Producto: " + listaProductos.toString().replaceAll("[", " ").replaceAll("]", "")),
+                                        Text(""),
+                                        Text("Cantidad: " + listaCantidad.toString().replaceAll("[", " ").replaceAll("]", "")),
+                                        Text(""),
+                                        Text("Precio unitario: " + listaPrecios.toString().replaceAll("[", " ").replaceAll("]", "")),
+                                        Text(""),
+                                        Text("Precio total x cantidad: " + listaTotalCantidad.toString().replaceAll("[", " ").replaceAll("]", "")),
+                                        Text(""),
+                                        Text(""),
+                                        Text("Total a pagar: " + precioTotal.toString()),
+                                        Text(""),
+                                        Text("Firma: "),
+                                      ]
+                                    )
+                                  ),
+                              ],
+                            ),
+                        )
+                        
                       ],
                     ),
                   )

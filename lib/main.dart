@@ -18,6 +18,7 @@ class _MyAppState extends State<MyApp> {
   List<String> listaProductos = new List<String>();
   List<int> listaCantidad = new List<int>();
   List<double> listaPrecios = new List<double>();
+  List<double> listaTotalCantidad = new List<double>();
   double precioTotal;
 
   bool _connected = false;
@@ -47,9 +48,12 @@ class _MyAppState extends State<MyApp> {
     listaPrecios.add(15);
     listaPrecios.add(100.50);
 
-    precioTotal = 140.95;
+    listaTotalCantidad.add(40.9);
+    listaTotalCantidad.add(25);
+    listaTotalCantidad.add(15);
+    listaTotalCantidad.add(1005);
 
-    print(listaProductos);
+    precioTotal = 140.95;
 
     WidgetsBinding.instance.addPostFrameCallback((_) => initBluetooth());
   }
@@ -177,25 +181,35 @@ class _MyAppState extends State<MyApp> {
                             list.add(LineText(type: LineText.TYPE_TEXT, content: 'Col. Comunal Morelos', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
                             list.add(LineText(type: LineText.TYPE_TEXT, content: vendedor, size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
                             list.add(LineText(type: LineText.TYPE_TEXT, content: cliente, size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Producto:', size:10, align: LineText.ALIGN_LEFT, linefeed: 1));
+                            list.add(LineText(linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Producto:', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
                             list.add(LineText(type: LineText.TYPE_TEXT, content: listaProductos.toString()
                                                                                                 .replaceAll(",", "\n").
                                                                                                 replaceAll("[", " ").
                                                                                                 replaceAll("]", ""),
-                                                                                                weight: 1, align: LineText.ALIGN_LEFT, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Cant:', size:10, align: LineText.ALIGN_CENTER));
+                                                                                                weight: 1, align: LineText.ALIGN_CENTER, linefeed: 1));
+                            list.add(LineText(linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Cantidad:', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
                             list.add(LineText(type: LineText.TYPE_TEXT, content: listaCantidad.toString()
                                                                                                 .replaceAll(",", "\n").
                                                                                                 replaceAll("[", " ").
                                                                                                 replaceAll("]", ""),
                                                                                                 weight: 1, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'P/u:', size:10, align: LineText.ALIGN_RIGHT));
+                            list.add(LineText(linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Precio unitario:', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
                             list.add(LineText(type: LineText.TYPE_TEXT, content: listaPrecios.toString()
                                                                                                 .replaceAll(",", "\n").
                                                                                                 replaceAll("[", " ").
                                                                                                 replaceAll("]", ""),
-                                                                                                weight: 1, align: LineText.ALIGN_RIGHT, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'P/t:', size:10, align: LineText.ALIGN_CENTER));
+                                                                                                weight: 1, align: LineText.ALIGN_CENTER, linefeed: 1));
+                            list.add(LineText(linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Precio total x cantidad:', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
+                            list.add(LineText(type: LineText.TYPE_TEXT, content: listaTotalCantidad.toString()
+                                                                                                .replaceAll(",", "\n").
+                                                                                                replaceAll("[", " ").
+                                                                                                replaceAll("]", ""),
+                                                                                                weight: 1, align: LineText.ALIGN_CENTER, linefeed: 1));
+                            list.add(LineText(linefeed: 1));
                             list.add(LineText(type: LineText.TYPE_TEXT, content: "Precio total: $precioTotal", size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
 
                             await bluetoothPrint.printReceipt(config, list);

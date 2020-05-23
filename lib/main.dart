@@ -234,31 +234,38 @@ class _MyAppState extends State<MyApp> {
                         Container(
                           height: 300.0,
                           child: ListView(
-                            padding: const EdgeInsets.all(20.0),
+                            //padding: const EdgeInsets.all(20.0),
                               children: <Widget>[
                                 SizedBox(
                                     height: 280,
                                     child: ListView(
                                       children: <Widget>[
-                                        Text("Botanax del Puerto"),
-                                        Text("RFC: 454613545342154"),
-                                        Text("Ciudad Lázaron Cárdenas"),
-                                        Text("Col. Comunal Morelos"),
-                                        Text(vendedor),
-                                        Text(cliente),
-                                        Text(""),
-                                        Text("Producto: " + listaProductos.toString().replaceAll("[", " ").replaceAll("]", "")),
-                                        Text(""),
-                                        Text("Cantidad: " + listaCantidad.toString().replaceAll("[", " ").replaceAll("]", "")),
-                                        Text(""),
-                                        Text("Precio unitario: " + listaPrecios.toString().replaceAll("[", " ").replaceAll("]", "")),
-                                        Text(""),
-                                        Text("Precio total x cantidad: " + listaTotalCantidad.toString().replaceAll("[", " ").replaceAll("]", "")),
-                                        Text(""),
-                                        Text(""),
-                                        Text("Total a pagar: " + precioTotal.toString()),
-                                        Text(""),
-                                        Text("Firma: "),
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: Column(
+                                            children: <Widget>[
+                                              Text("Botanax del Puerto"),
+                                              Text("RFC: 454613545342154"),
+                                              Text("Ciudad Lázaron Cárdenas"),
+                                              Text("Col. Comunal Morelos"),
+                                              Text(vendedor),
+                                              Text(cliente),
+                                              Text(""),
+                                              Text("Producto: " + listaProductos.toString().replaceAll("[", " ").replaceAll("]", "")),
+                                              Text(""),
+                                              Text("Cantidad: " + listaCantidad.toString().replaceAll("[", " ").replaceAll("]", "")),
+                                              Text(""),
+                                              Text("Precio unitario: " + listaPrecios.toString().replaceAll("[", " ").replaceAll("]", "")),
+                                              Text(""),
+                                              Text("Precio total x cantidad: " + listaTotalCantidad.toString().replaceAll("[", " ").replaceAll("]", "")),
+                                              Text(""),
+                                              Text(""),
+                                              Text("Total a pagar: " + precioTotal.toString()),
+                                              Text(""),
+                                              Text("Firma: "),
+                                            ],
+                                          )
+                                        )
                                       ]
                                     )
                                   ),

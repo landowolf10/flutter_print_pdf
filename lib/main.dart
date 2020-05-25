@@ -23,7 +23,7 @@ class _MyAppState extends State<MyApp> {
 
   bool _connected = false;
   BluetoothDevice _device;
-  String tips = 'no device connect';
+  String tips = 'Impresora no conectada';
   String vendedor, cliente;
 
   @override
@@ -78,7 +78,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> initBluetooth() async {
     bluetoothPrint.startScan(timeout: Duration(seconds: 4));
 
-    bool isConnected=await bluetoothPrint.isConnected;
+    bool isConnected = await bluetoothPrint.isConnected;
 
     bluetoothPrint.state.listen((state) {
       print('cur device status: $state');
@@ -87,13 +87,13 @@ class _MyAppState extends State<MyApp> {
         case BluetoothPrint.CONNECTED:
           setState(() {
             _connected = true;
-            tips = 'connect success';
+            tips = 'Conexión exitosa';
           });
           break;
         case BluetoothPrint.DISCONNECTED:
           setState(() {
             _connected = false;
-            tips = 'disconnect success';
+            tips = 'Desconexión exitosa';
           });
           break;
         default:
@@ -103,9 +103,9 @@ class _MyAppState extends State<MyApp> {
 
     if (!mounted) return;
 
-    if(isConnected) {
+    if (isConnected) {
       setState(() {
-        _connected=true;
+        _connected = true;
       });
     }
   }
@@ -113,173 +113,272 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
-          appBar: AppBar(
-            title: const Text('BluetoothPrint example app'),
-          ),
-          body: RefreshIndicator(
-            onRefresh: () =>
-                bluetoothPrint.startScan(timeout: Duration(seconds: 4)),
-            child: SingleChildScrollView(
-              child: Column(
-                children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                        child: Text(tips),
-                      ),
-                    ],
-                  ),
-                  Divider(),
-                  StreamBuilder<List<BluetoothDevice>>(
-                    stream: bluetoothPrint.scanResults,
-                    initialData: [],
-                    builder: (c, snapshot) => Column(
-                      children: snapshot.data.map((d) => ListTile(
-                        title: Text(d.name??''),
-                        subtitle: Text(d.address),
-                        onTap: () async {
-                          setState(() {
-                            _device = d;
-                          });
-                        },
-                        trailing: _device!=null && _device.address == d.address?Icon(
-                          Icons.check,
-                          color: Colors.green,
-                        ):null,
-                      )).toList(),
+        body: RefreshIndicator(
+          onRefresh: () =>
+              bluetoothPrint.startScan(timeout: Duration(seconds: 4)),
+          child: SingleChildScrollView(
+            child: Column(
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding:
+                          EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      child: Text(tips),
                     ),
+                  ],
+                ),
+                Divider(),
+                StreamBuilder<List<BluetoothDevice>>(
+                  stream: bluetoothPrint.scanResults,
+                  initialData: [],
+                  builder: (c, snapshot) => Column(
+                    children: snapshot.data
+                        .map((d) => ListTile(
+                              title: Text(d.name ?? ''),
+                              subtitle: Text(d.address),
+                              onTap: () async {
+                                setState(() {
+                                  _device = d;
+                                });
+                              },
+                              trailing: _device != null &&
+                                      _device.address == d.address
+                                  ? Icon(
+                                      Icons.check,
+                                      color: Colors.green,
+                                    )
+                                  : null,
+                            ))
+                        .toList(),
                   ),
-                  Divider(),
-                  Container(
-                    padding: EdgeInsets.fromLTRB(20, 5, 20, 10),
-                    child: Column(
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            OutlineButton(
-                              child: Text('connect'),
-                              onPressed:  _connected?null:() async {
-                                if(_device!=null && _device.address !=null){
+                ),
+                Divider(),
+                Container(
+                  padding: EdgeInsets.fromLTRB(20, 5, 20, 10),
+                  child: Column(
+                    children: <Widget>[
+                      OutlineButton(
+                        child: Text('Conectar impresora'),
+                        onPressed: _connected
+                            ? null
+                            : () async {
+                                if (_device != null &&
+                                    _device.address != null) {
                                   await bluetoothPrint.connect(_device);
-                                }else{
+                                } else {
                                   setState(() {
-                                    tips = 'please select device';
+                                    tips = 'Favor de seleccionar una impresora';
                                   });
-                                  print('please select device');
                                 }
                               },
-                            ),
-                            SizedBox(width: 10.0),
-                            OutlineButton(
-                              child: Text('disconnect'),
-                              onPressed:  _connected?() async {
+                      ),
+                      SizedBox(width: 10.0),
+                      OutlineButton(
+                        child: Text('Desconectar impresora'),
+                        onPressed: _connected
+                            ? () async {
                                 await bluetoothPrint.disconnect();
-                              }:null,
-                            ),
+                              }
+                            : null,
+                      ),
+                      OutlineButton(
+                        child: Text('Imprimir ticket'),
+                        onPressed: _connected
+                            ? () async {
+                                Map<String, dynamic> config = Map();
+                                List<LineText> list = List();
+                                ByteData data = await rootBundle
+                                    .load("img/botanaxLogo.png");
+                                List<int> imageBytes = data.buffer.asUint8List(
+                                    data.offsetInBytes, data.lengthInBytes);
+                                String base64Image = base64Encode(imageBytes);
+                                list.add(LineText(
+                                    type: LineText.TYPE_IMAGE,
+                                    content: base64Image,
+                                    align: LineText.ALIGN_LEFT,
+                                    linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: 'Botanax del Puerto',
+                                    size: 10,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: 'RFC: 454613545342154',
+                                    size: 10,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: 'Ciudad Lázaron Cárdenas',
+                                    size: 10,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: 'Col. Comunal Morelos',
+                                    size: 10,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: vendedor,
+                                    size: 10,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: cliente,
+                                    size: 10,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: 'Producto:',
+                                    size: 10,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: listaProductos
+                                        .toString()
+                                        .replaceAll(",", "\n")
+                                        .replaceAll("[", " ")
+                                        .replaceAll("]", ""),
+                                    weight: 1,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: 'Cantidad:',
+                                    size: 10,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: listaCantidad
+                                        .toString()
+                                        .replaceAll(",", "\n")
+                                        .replaceAll("[", " ")
+                                        .replaceAll("]", ""),
+                                    weight: 1,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: 'Precio unitario:',
+                                    size: 10,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: listaPrecios
+                                        .toString()
+                                        .replaceAll(",", "\n")
+                                        .replaceAll("[", " ")
+                                        .replaceAll("]", ""),
+                                    weight: 1,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: 'Precio total x cantidad:',
+                                    size: 10,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: listaTotalCantidad
+                                        .toString()
+                                        .replaceAll(",", "\n")
+                                        .replaceAll("[", " ")
+                                        .replaceAll("]", ""),
+                                    weight: 1,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+                                list.add(LineText(linefeed: 1));
+                                list.add(LineText(
+                                    type: LineText.TYPE_TEXT,
+                                    content: "Precio total: $precioTotal",
+                                    size: 10,
+                                    align: LineText.ALIGN_CENTER,
+                                    linefeed: 1));
+
+                                await bluetoothPrint.printReceipt(config, list);
+                              }
+                            : null,
+                      ),
+                      Container(
+                        height: 350.0,
+                        child: ListView(
+                          //padding: const EdgeInsets.all(20.0),
+                          children: <Widget>[
+                            SizedBox(
+                                height: 320,
+                                child: ListView(children: <Widget>[
+                                  Align(
+                                      alignment: Alignment.centerRight,
+                                      child: Column(
+                                        children: <Widget>[
+                                          Image.asset("img/botanaxLogo.png"),
+                                          Text("Botanax del Puerto"),
+                                          Text("RFC: 454613545342154"),
+                                          Text("Ciudad Lázaron Cárdenas"),
+                                          Text("Col. Comunal Morelos"),
+                                          Text(vendedor),
+                                          Text(cliente),
+                                          Text(""),
+                                          Text("Producto: " +
+                                              listaProductos
+                                                  .toString()
+                                                  .replaceAll("[", " ")
+                                                  .replaceAll("]", "")),
+                                          Text(""),
+                                          Text("Cantidad: " +
+                                              listaCantidad
+                                                  .toString()
+                                                  .replaceAll("[", " ")
+                                                  .replaceAll("]", "")),
+                                          Text(""),
+                                          Text("Precio unitario: " +
+                                              listaPrecios
+                                                  .toString()
+                                                  .replaceAll("[", " ")
+                                                  .replaceAll("]", "")),
+                                          Text(""),
+                                          Text("Precio total x cantidad: " +
+                                              listaTotalCantidad
+                                                  .toString()
+                                                  .replaceAll("[", " ")
+                                                  .replaceAll("]", "")),
+                                          Text(""),
+                                          Text(""),
+                                          Text("Total a pagar: " +
+                                              precioTotal.toString()),
+                                          Text(""),
+                                          Text("Firma: "),
+                                        ],
+                                      ))
+                                ])),
                           ],
                         ),
-                        OutlineButton(
-                          child: Text('Imprimir ticket'),
-                          onPressed:  _connected?() async {
-                            Map<String, dynamic> config = Map();
-                            List<LineText> list = List();
-                            ByteData data = await rootBundle.load("img/botanaxLogo.png");
-                            List<int> imageBytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-                            String base64Image = base64Encode(imageBytes);
-                            list.add(LineText(type: LineText.TYPE_IMAGE, content: base64Image, align: LineText.ALIGN_LEFT, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Botanax del Puerto', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'RFC: 454613545342154', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Ciudad Lázaron Cárdenas', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Col. Comunal Morelos', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: vendedor, size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: cliente, size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Producto:', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: listaProductos.toString()
-                                                                                                .replaceAll(",", "\n").
-                                                                                                replaceAll("[", " ").
-                                                                                                replaceAll("]", ""),
-                                                                                                weight: 1, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Cantidad:', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: listaCantidad.toString()
-                                                                                                .replaceAll(",", "\n").
-                                                                                                replaceAll("[", " ").
-                                                                                                replaceAll("]", ""),
-                                                                                                weight: 1, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Precio unitario:', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: listaPrecios.toString()
-                                                                                                .replaceAll(",", "\n").
-                                                                                                replaceAll("[", " ").
-                                                                                                replaceAll("]", ""),
-                                                                                                weight: 1, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: 'Precio total x cantidad:', size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: listaTotalCantidad.toString()
-                                                                                                .replaceAll(",", "\n").
-                                                                                                replaceAll("[", " ").
-                                                                                                replaceAll("]", ""),
-                                                                                                weight: 1, align: LineText.ALIGN_CENTER, linefeed: 1));
-                            list.add(LineText(linefeed: 1));
-                            list.add(LineText(type: LineText.TYPE_TEXT, content: "Precio total: $precioTotal", size:10, align: LineText.ALIGN_CENTER, linefeed: 1));
-
-                            await bluetoothPrint.printReceipt(config, list);
-                          }:null,
-                        ),
-                        Container(
-                          height: 300.0,
-                          child: ListView(
-                            //padding: const EdgeInsets.all(20.0),
-                              children: <Widget>[
-                                SizedBox(
-                                    height: 280,
-                                    child: ListView(
-                                      children: <Widget>[
-                                        Align(
-                                          alignment: Alignment.centerRight,
-                                          child: Column(
-                                            children: <Widget>[
-                                              Text("Botanax del Puerto"),
-                                              Text("RFC: 454613545342154"),
-                                              Text("Ciudad Lázaron Cárdenas"),
-                                              Text("Col. Comunal Morelos"),
-                                              Text(vendedor),
-                                              Text(cliente),
-                                              Text(""),
-                                              Text("Producto: " + listaProductos.toString().replaceAll("[", " ").replaceAll("]", "")),
-                                              Text(""),
-                                              Text("Cantidad: " + listaCantidad.toString().replaceAll("[", " ").replaceAll("]", "")),
-                                              Text(""),
-                                              Text("Precio unitario: " + listaPrecios.toString().replaceAll("[", " ").replaceAll("]", "")),
-                                              Text(""),
-                                              Text("Precio total x cantidad: " + listaTotalCantidad.toString().replaceAll("[", " ").replaceAll("]", "")),
-                                              Text(""),
-                                              Text(""),
-                                              Text("Total a pagar: " + precioTotal.toString()),
-                                              Text(""),
-                                              Text("Firma: "),
-                                            ],
-                                          )
-                                        )
-                                      ]
-                                    )
-                                  ),
-                              ],
-                            ),
-                        )
-                        
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                      )
+                    ],
+                  ),
+                )
+              ],
             ),
           ),
+        ),
         floatingActionButton: StreamBuilder<bool>(
           stream: bluetoothPrint.isScanning,
           initialData: false,
@@ -293,7 +392,8 @@ class _MyAppState extends State<MyApp> {
             } else {
               return FloatingActionButton(
                   child: Icon(Icons.search),
-                  onPressed: () => bluetoothPrint.startScan(timeout: Duration(seconds: 4)));
+                  onPressed: () =>
+                      bluetoothPrint.startScan(timeout: Duration(seconds: 4)));
             }
           },
         ),

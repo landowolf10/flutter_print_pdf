@@ -248,7 +248,6 @@ class _MyAppState extends State<MyApp> {
                                     type: LineText.TYPE_TEXT,
                                     content: listaProductos
                                         .toString()
-                                        .replaceAll(",", "\n")
                                         .replaceAll("[", " ")
                                         .replaceAll("]", ""),
                                     weight: 1,
@@ -265,7 +264,6 @@ class _MyAppState extends State<MyApp> {
                                     type: LineText.TYPE_TEXT,
                                     content: listaCantidad
                                         .toString()
-                                        .replaceAll(",", "\n")
                                         .replaceAll("[", " ")
                                         .replaceAll("]", ""),
                                     weight: 1,
@@ -282,7 +280,6 @@ class _MyAppState extends State<MyApp> {
                                     type: LineText.TYPE_TEXT,
                                     content: listaPrecios
                                         .toString()
-                                        .replaceAll(",", "\n")
                                         .replaceAll("[", " ")
                                         .replaceAll("]", ""),
                                     weight: 1,
@@ -299,7 +296,6 @@ class _MyAppState extends State<MyApp> {
                                     type: LineText.TYPE_TEXT,
                                     content: listaTotalCantidad
                                         .toString()
-                                        .replaceAll(",", "\n")
                                         .replaceAll("[", " ")
                                         .replaceAll("]", ""),
                                     weight: 1,
